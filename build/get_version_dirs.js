@@ -41,7 +41,7 @@ var path = require("path");
 var get_config_dir_1 = require("./get_config_dir");
 function get_version_dirs() {
     return __awaiter(this, void 0, void 0, function () {
-        var config_dir, discord_config_dir, err_1, own_config_stat, items_in_discord_cfg, discord_version_dirs, _i, items_in_discord_cfg_1, item, full_path, stats, inner_items;
+        var config_dir, discord_config_dir, err_1, own_config_stat, build_info_raw, build_info, discord_version_dirs;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -66,37 +66,13 @@ function get_version_dirs() {
                     if (!own_config_stat.isDirectory()) {
                         throw new Error("Config directory is not a directory at: " + config_dir);
                     }
-                    return [4, fs.readdir(discord_config_dir)];
+                    return [4, fs.readFile("/usr/lib/discord/build_info.json", "utf8")];
                 case 7:
-                    items_in_discord_cfg = _a.sent();
-                    discord_version_dirs = [];
-                    _i = 0, items_in_discord_cfg_1 = items_in_discord_cfg;
-                    _a.label = 8;
-                case 8:
-                    if (!(_i < items_in_discord_cfg_1.length)) return [3, 12];
-                    item = items_in_discord_cfg_1[_i];
-                    full_path = path.join(discord_config_dir, item);
-                    return [4, fs.stat(full_path)];
-                case 9:
-                    stats = _a.sent();
-                    if (!stats.isDirectory()) {
-                        return [3, 11];
-                    }
-                    return [4, fs.readdir(full_path)];
-                case 10:
-                    inner_items = _a.sent();
-                    if (inner_items[0] !== "modules") {
-                        return [3, 11];
-                    }
-                    discord_version_dirs.push(full_path);
-                    _a.label = 11;
-                case 11:
-                    _i++;
-                    return [3, 8];
-                case 12:
-                    if (discord_version_dirs.length === 0) {
-                        throw new Error("Could not find discord installs in" + path.join(discord_config_dir));
-                    }
+                    build_info_raw = _a.sent();
+                    build_info = JSON.parse(build_info_raw);
+                    discord_version_dirs = [
+                        path.join(discord_config_dir, build_info.version)
+                    ];
                     return [2, discord_version_dirs];
             }
         });

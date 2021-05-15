@@ -91,8 +91,9 @@ function patch() {
                     _i = 0, discord_version_dirs_1 = discord_version_dirs;
                     _a.label = 2;
                 case 2:
-                    if (!(_i < discord_version_dirs_1.length)) return [3, 7];
+                    if (!(_i < discord_version_dirs_1.length)) return [3, 8];
                     version_dir = discord_version_dirs_1[_i];
+                    console.log("Patching", version_dir);
                     discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar");
                     return [4, get_temp_dir()];
                 case 3:
@@ -112,7 +113,7 @@ function patch() {
                             previous_line = old_mainscreen_lines[line_to_insert_patch - 1];
                             if (previous_line.trim() == "}") {
                                 console.warn(version_dir, "was already patched");
-                                return [3, 6];
+                                return [3, 7];
                             }
                             break;
                         }
@@ -129,12 +130,15 @@ function patch() {
                     return [4, fs.writeFile(mainscreen_path, patched_mainscreen)];
                 case 5:
                     _a.sent();
-                    asar.createPackage(extracted_archive, discord_pkg_path);
-                    _a.label = 6;
+                    return [4, asar.createPackage(extracted_archive, discord_pkg_path)];
                 case 6:
+                    _a.sent();
+                    console.log("Successfully patched", version_dir);
+                    _a.label = 7;
+                case 7:
                     _i++;
                     return [3, 2];
-                case 7: return [2];
+                case 8: return [2];
             }
         });
     });
