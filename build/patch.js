@@ -41,8 +41,11 @@ var fs = require("fs/promises");
 var os = require("os");
 var nanoid_1 = require("nanoid");
 var asar = require("asar");
+var process = require("process");
 var get_config_dir_1 = require("./get_config_dir");
 var get_version_dirs_1 = require("./get_version_dirs");
+var kill_discord_1 = require("./kill_discord");
+var start_discord_1 = require("./start_discord");
 function get_temp_dir() {
     return __awaiter(this, void 0, void 0, function () {
         var temp_dir, dir_exists, _a, random_patch_id, patch_dir;
@@ -81,28 +84,30 @@ function patch() {
         var config_dir, own_config_dir, discord_version_dirs, patch, _i, discord_version_dirs_1, version_dir, discord_pkg_path, temp_dir, extracted_archive, mainscreen_path, old_mainscreen, old_mainscreen_lines, line_to_insert_patch, line_num, line_content, previous_line, old_first_slice, old_last_slice, patched_mainscreen;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
+                case 0: return [4, kill_discord_1["default"]()];
+                case 1:
+                    _a.sent();
                     config_dir = get_config_dir_1["default"]();
                     own_config_dir = path.join(config_dir, "discord-extensions");
                     return [4, get_version_dirs_1["default"]()];
-                case 1:
+                case 2:
                     discord_version_dirs = _a.sent();
                     patch = "_electron.app.whenReady().then(async () => {\n        const config_dir = \"" + own_config_dir + "\" \n        const main_session = mainWindow.webContents.session\n        _fs.default.readdir(config_dir, async (err, dirs) => {\n            if (err) { throw err }\n            for (const dir_name of dirs) {\n                const full_dir_name = _path.default.join(config_dir, dir_name) \n                await main_session.loadExtension(full_dir_name)\n            }\n        })\n    })\n    ";
                     _i = 0, discord_version_dirs_1 = discord_version_dirs;
-                    _a.label = 2;
-                case 2:
-                    if (!(_i < discord_version_dirs_1.length)) return [3, 8];
+                    _a.label = 3;
+                case 3:
+                    if (!(_i < discord_version_dirs_1.length)) return [3, 9];
                     version_dir = discord_version_dirs_1[_i];
                     console.log("Patching", version_dir);
                     discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar");
                     return [4, get_temp_dir()];
-                case 3:
+                case 4:
                     temp_dir = _a.sent();
                     asar.extractAll(discord_pkg_path, path.join(temp_dir, "core"));
                     extracted_archive = path.join(temp_dir, "core");
                     mainscreen_path = path.join(extracted_archive, "app", "mainScreen.js");
                     return [4, fs.readFile(mainscreen_path, 'utf8')];
-                case 4:
+                case 5:
                     old_mainscreen = _a.sent();
                     old_mainscreen_lines = old_mainscreen.split("\n");
                     line_to_insert_patch = void 0;
@@ -113,7 +118,7 @@ function patch() {
                             previous_line = old_mainscreen_lines[line_to_insert_patch - 1];
                             if (previous_line.trim() == "}") {
                                 console.warn(version_dir, "was already patched");
-                                return [3, 7];
+                                return [3, 8];
                             }
                             break;
                         }
@@ -128,17 +133,19 @@ function patch() {
                     patched_mainscreen += patch;
                     patched_mainscreen += old_last_slice.reduce(function (prev, curr) { return prev += curr + '\n'; }, "");
                     return [4, fs.writeFile(mainscreen_path, patched_mainscreen)];
-                case 5:
-                    _a.sent();
-                    return [4, asar.createPackage(extracted_archive, discord_pkg_path)];
                 case 6:
                     _a.sent();
-                    console.log("Successfully patched", version_dir);
-                    _a.label = 7;
+                    return [4, asar.createPackage(extracted_archive, discord_pkg_path)];
                 case 7:
+                    _a.sent();
+                    console.log("Successfully patched", version_dir);
+                    start_discord_1["default"]();
+                    process.exit(0);
+                    _a.label = 8;
+                case 8:
                     _i++;
-                    return [3, 2];
-                case 8: return [2];
+                    return [3, 3];
+                case 9: return [2];
             }
         });
     });

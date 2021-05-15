@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "asar": "^3.0.3",
-    "nanoid": "^3.1.23"
+    "fkill": "^7.1.1",
+    "nanoid": "^3.1.23",
+    "ps-list": "^7.2.0"
   },
   "devDependencies": {
     "@types/node": "^15.0.3",

@@ -3,9 +3,12 @@ import * as fs from "fs/promises"
 import * as os from "os"
 import { nanoid } from "nanoid"
 import * as asar from "asar"
+import * as process from "process"
 
 import get_config_dir from "./get_config_dir"
 import get_version_dirs from "./get_version_dirs"
+import kill_discord from "./kill_discord"
+import start_discord from "./start_discord"
 
 async function get_temp_dir(): Promise<string> {
     const temp_dir = path.join(os.tmpdir(), "discord-extensions")
@@ -29,6 +32,7 @@ async function get_temp_dir(): Promise<string> {
 }
 
 export default async function patch() {
+    await kill_discord()
     const config_dir = get_config_dir()
     const own_config_dir = path.join(config_dir, "discord-extensions")
     const discord_version_dirs = await get_version_dirs()
@@ -107,6 +111,8 @@ export default async function patch() {
         await asar.createPackage(extracted_archive, discord_pkg_path)
 
         console.log("Successfully patched", version_dir)
+        start_discord()
+        process.exit(0)
     }
 }
 

@@ -36,68 +36,41 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var fs = require("fs/promises");
-var process = require("process");
-var get_version_dirs_1 = require("./get_version_dirs");
-var kill_discord_1 = require("./kill_discord");
-var start_discord_1 = require("./start_discord");
-function returnTimeout(timeout) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, timeout);
-    });
-}
-function unpatch() {
+var psList = require("ps-list");
+var fkill = require("fkill");
+function kill_discord() {
     return __awaiter(this, void 0, void 0, function () {
-        var versions, _i, versions_1, version_dir;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4, kill_discord_1["default"]()];
+        var procs, electron_procs, regex_q, _i, electron_procs_1, proc, _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4, psList()];
                 case 1:
-                    _a.sent();
-                    return [4, get_version_dirs_1["default"]()];
+                    procs = _b.sent();
+                    electron_procs = procs.filter(function (proc) { return proc.name == "electron"; });
+                    regex_q = /[d|D]iscord/;
+                    _i = 0, electron_procs_1 = electron_procs;
+                    _b.label = 2;
                 case 2:
-                    versions = _a.sent();
-                    _i = 0, versions_1 = versions;
-                    _a.label = 3;
+                    if (!(_i < electron_procs_1.length)) return [3, 7];
+                    proc = electron_procs_1[_i];
+                    if (!proc.cmd.match(regex_q)) return [3, 6];
+                    _b.label = 3;
                 case 3:
-                    if (!(_i < versions_1.length)) return [3, 11];
-                    version_dir = versions_1[_i];
-                    console.log("Deleting", version_dir, "in 5 seconds");
-                    console.log("5");
-                    return [4, returnTimeout(1000)];
+                    _b.trys.push([3, 5, , 6]);
+                    return [4, fkill(proc.pid)];
                 case 4:
-                    _a.sent();
-                    console.log("4");
-                    return [4, returnTimeout(1000)];
+                    _b.sent();
+                    return [3, 6];
                 case 5:
-                    _a.sent();
-                    console.log("3");
-                    return [4, returnTimeout(1000)];
+                    _a = _b.sent();
+                    return [3, 6];
                 case 6:
-                    _a.sent();
-                    console.log("2");
-                    return [4, returnTimeout(1000)];
-                case 7:
-                    _a.sent();
-                    console.log("1");
-                    return [4, returnTimeout(1000)];
-                case 8:
-                    _a.sent();
-                    return [4, fs.rm(version_dir, { recursive: true })];
-                case 9:
-                    _a.sent();
-                    console.log("Successfully deleted");
-                    _a.label = 10;
-                case 10:
                     _i++;
-                    return [3, 3];
-                case 11:
-                    start_discord_1["default"]();
-                    process.exit(0);
-                    return [2];
+                    return [3, 2];
+                case 7: return [2];
             }
         });
     });
 }
-exports["default"] = unpatch;
-//# sourceMappingURL=unpatch.js.map
+exports["default"] = kill_discord;
+//# sourceMappingURL=kill_discord.js.map
