@@ -19,9 +19,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github-tobeqz.com:tobeqz/discord-extensions"
+    "url": "https://github.com/tobeqz/discord-extensions"
   },
-  "keywords": ["discord", "electron"],
+  "keywords": [
+    "discord",
+    "electron"
+  ],
   "author": "Tobeqz",
-  "license": "GPLv3"
+  "license": "GPL-3.0-only"
 }
