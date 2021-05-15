@@ -1,0 +1,27 @@
+{
+  "name": "discord-extensions",
+  "version": "0.0.1",
+  "description": "Easily add chrome extensions to your discord install.",
+  "main": "build/main.js",
+  "dependencies": {
+    "asar": "^3.0.3",
+    "nanoid": "^3.1.23"
+  },
+  "devDependencies": {
+    "@types/node": "^15.0.3",
+    "@types/yargs": "^16.0.1",
+    "typescript": "^4.2.4",
+    "yargs": "^17.0.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-tobeqz.com:tobeqz/discord-extensions"
+  },
+  "keywords": ["discord", "electron"],
+  "author": "Tobeqz",
+  "license": "GPLv3"
+}
