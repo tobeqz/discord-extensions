@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var path = require("path");
 var fs = require("fs/promises");
+var os = require("os");
 var nanoid_1 = require("nanoid");
 var asar = require("asar");
 var get_config_dir_1 = require("./get_config_dir");
@@ -48,7 +49,7 @@ function get_temp_dir() {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    temp_dir = path.join("/tmp", "discord-extensions");
+                    temp_dir = path.join(os.tmpdir(), "discord-extensions");
                     dir_exists = false;
                     _b.label = 1;
                 case 1:

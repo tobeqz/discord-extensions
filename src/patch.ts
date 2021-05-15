@@ -48,6 +48,7 @@ export default async function patch() {
     `
     // Patch each installed version
     dirLoop: for (const version_dir of discord_version_dirs) {
+        console.log("Patching", version_dir)
         // Get disocrd binary (asar)
         const discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar")
 
@@ -103,10 +104,9 @@ export default async function patch() {
         await fs.writeFile(mainscreen_path, patched_mainscreen)
 
         // Repackage the patched archive and overwrite the default core.asar
-        asar.createPackage(extracted_archive, discord_pkg_path)
+        await asar.createPackage(extracted_archive, discord_pkg_path)
+
+        console.log("Successfully patched", version_dir)
     }
-
-    
-
 }
 

@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Easily add chrome extensions to your discord install.",
   "main": "build/main.js",
+  "bin": {
+    "discord-extensions": "build/main.js"
+  },
   "dependencies": {
     "asar": "^3.0.3",
     "nanoid": "^3.1.23"
