@@ -19,31 +19,15 @@ export default async function get_version_dirs() {
         throw new Error("Config directory is not a directory at: " + config_dir)
     }
 
-    // Get discord version directory
-    const items_in_discord_cfg = await fs.readdir(discord_config_dir)
+    // Get discord build info
+    // TODO: This does not work on windows
+    const build_info_raw = await fs.readFile("/usr/lib/discord/build_info.json", "utf8")
+    // TODO: Check for Canary and ask which install the user wants to patch
+    const build_info = JSON.parse(build_info_raw) as { releaseChannel: string, version: string }
 
-    const discord_version_dirs: string[] = []
-    // Find directory with another directory called modules in it
-    for (const item of items_in_discord_cfg) {
-        const full_path = path.join(discord_config_dir, item)
-        const stats = await fs.stat(full_path) 
-        
-        if (!stats.isDirectory()) {
-            continue
-        }
-        
-        const inner_items = await fs.readdir(full_path)
-
-        if (inner_items[0] !== "modules") {
-            continue
-        }
-
-        discord_version_dirs.push(full_path)
-    }
-
-    if (discord_version_dirs.length === 0) {
-        throw new Error("Could not find discord installs in" + path.join(discord_config_dir))
-    }
+    const discord_version_dirs: string[] = [
+        path.join(discord_config_dir, build_info.version)
+    ]
     
     return discord_version_dirs
 }
