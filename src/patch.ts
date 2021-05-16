@@ -9,6 +9,7 @@ import get_config_dir from "./get_config_dir"
 import get_version_dirs from "./get_version_dirs"
 import kill_discord from "./kill_discord"
 import start_discord from "./start_discord"
+import { Console } from 'console'
 
 async function get_temp_dir(): Promise<string> {
     const temp_dir = path.join(os.tmpdir(), "discord-extensions")
@@ -37,9 +38,11 @@ export default async function patch() {
     const own_config_dir = path.join(config_dir, "discord-extensions")
     const discord_version_dirs = await get_version_dirs()
 
-    
+    console.log(discord_version_dirs)
+
+    const double_escaped_path = own_config_dir.split("\\").reduce((prev, curr) => prev + curr + "\\\\", "") 
     const patch = `_electron.app.whenReady().then(async () => {
-        const config_dir = "${own_config_dir}" 
+        const config_dir = "${double_escaped_path}"
         const main_session = mainWindow.webContents.session
         _fs.default.readdir(config_dir, async (err, dirs) => {
             if (err) { throw err }
@@ -54,7 +57,15 @@ export default async function patch() {
     dirLoop: for (const version_dir of discord_version_dirs) {
         console.log("Patching", version_dir)
         // Get disocrd binary (asar)
-        const discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar")
+        let discord_pkg_path: string;
+
+        if (os.platform() === 'linux') {
+            discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar")
+        } else if (os.platform() === 'win32') {
+            // TODO: discord_desktop_core-1 might change names!
+            discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core-1", "discord_desktop_core", "core.asar")
+        }
+
 
         // Get dedicated directory for this patch
         const temp_dir = await get_temp_dir()

@@ -96,7 +96,7 @@ function get_version_dirs() {
                                 version_string = version_string.substring(0, version_string.length - 1);
                                 var version_dir = path.join(install_dir_1, "" + version_string);
                                 console.log(version_array, version_string, version_dir);
-                                console.log(version_dir);
+                                resolve([version_dir]);
                             }
                         });
                     }

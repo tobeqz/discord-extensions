@@ -81,7 +81,7 @@ function get_temp_dir() {
 }
 function patch() {
     return __awaiter(this, void 0, void 0, function () {
-        var config_dir, own_config_dir, discord_version_dirs, patch, _i, discord_version_dirs_1, version_dir, discord_pkg_path, temp_dir, extracted_archive, mainscreen_path, old_mainscreen, old_mainscreen_lines, line_to_insert_patch, line_num, line_content, previous_line, old_first_slice, old_last_slice, patched_mainscreen;
+        var config_dir, own_config_dir, discord_version_dirs, double_escaped_path, patch, _i, discord_version_dirs_1, version_dir, discord_pkg_path, temp_dir, extracted_archive, mainscreen_path, old_mainscreen, old_mainscreen_lines, line_to_insert_patch, line_num, line_content, previous_line, old_first_slice, old_last_slice, patched_mainscreen;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4, kill_discord_1["default"]()];
@@ -92,14 +92,22 @@ function patch() {
                     return [4, get_version_dirs_1["default"]()];
                 case 2:
                     discord_version_dirs = _a.sent();
-                    patch = "_electron.app.whenReady().then(async () => {\n        const config_dir = \"" + own_config_dir + "\" \n        const main_session = mainWindow.webContents.session\n        _fs.default.readdir(config_dir, async (err, dirs) => {\n            if (err) { throw err }\n            for (const dir_name of dirs) {\n                const full_dir_name = _path.default.join(config_dir, dir_name) \n                await main_session.loadExtension(full_dir_name)\n            }\n        })\n    })\n    ";
+                    console.log(discord_version_dirs);
+                    double_escaped_path = own_config_dir.split("\\").reduce(function (prev, curr) { return prev + curr + "\\\\"; }, "");
+                    patch = "_electron.app.whenReady().then(async () => {\n        const config_dir = \"" + double_escaped_path + "\"\n        const main_session = mainWindow.webContents.session\n        _fs.default.readdir(config_dir, async (err, dirs) => {\n            if (err) { throw err }\n            for (const dir_name of dirs) {\n                const full_dir_name = _path.default.join(config_dir, dir_name) \n                await main_session.loadExtension(full_dir_name)\n            }\n        })\n    })\n    ";
                     _i = 0, discord_version_dirs_1 = discord_version_dirs;
                     _a.label = 3;
                 case 3:
                     if (!(_i < discord_version_dirs_1.length)) return [3, 9];
                     version_dir = discord_version_dirs_1[_i];
                     console.log("Patching", version_dir);
-                    discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar");
+                    discord_pkg_path = void 0;
+                    if (os.platform() === 'linux') {
+                        discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core", "core.asar");
+                    }
+                    else if (os.platform() === 'win32') {
+                        discord_pkg_path = path.join(version_dir, "modules", "discord_desktop_core-1", "discord_desktop_core", "core.asar");
+                    }
                     return [4, get_temp_dir()];
                 case 4:
                     temp_dir = _a.sent();
