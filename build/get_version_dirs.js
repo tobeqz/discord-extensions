@@ -36,15 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var os = require("os");
 var fs = require("fs/promises");
 var path = require("path");
+var sqlite = require("sqlite3");
 var get_config_dir_1 = require("./get_config_dir");
 function get_version_dirs() {
-    return __awaiter(this, void 0, void 0, function () {
-        var config_dir, discord_config_dir, err_1, own_config_stat, build_info_raw, build_info, discord_version_dirs;
+    var _this = this;
+    return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+        var config_dir, discord_config_dir, err_1, own_config_stat, build_info_raw, build_info, discord_version_dirs, home_dir, install_dir_1, installer_db, db;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    if (!(os.platform() == 'linux')) return [3, 8];
                     config_dir = get_config_dir_1["default"]();
                     discord_config_dir = path.join(config_dir, "discord");
                     _a.label = 1;
@@ -73,10 +77,37 @@ function get_version_dirs() {
                     discord_version_dirs = [
                         path.join(discord_config_dir, build_info.version)
                     ];
-                    return [2, discord_version_dirs];
+                    resolve(discord_version_dirs);
+                    return [3, 9];
+                case 8:
+                    if (os.platform() == "win32") {
+                        home_dir = os.homedir();
+                        install_dir_1 = path.join(home_dir, "AppData", "Local", "Discord");
+                        installer_db = path.join(install_dir_1, "installer.db");
+                        console.log(installer_db);
+                        db = new sqlite.Database(installer_db, sqlite.OPEN_READONLY);
+                        db.each("SELECT * FROM key_values", function (err, row) {
+                            var key = row.key;
+                            var raw_json = row.value;
+                            if (key == "host/app/stable/win/x86") {
+                                var version_data = JSON.parse(raw_json);
+                                var version_array = version_data[0].host_version.version;
+                                var version_string = version_array.reduce(function (prev, curr) { return prev + curr.toString() + "."; }, "app-");
+                                version_string = version_string.substring(0, version_string.length - 1);
+                                var version_dir = path.join(install_dir_1, "" + version_string);
+                                console.log(version_array, version_string, version_dir);
+                                console.log(version_dir);
+                            }
+                        });
+                    }
+                    else {
+                        throw new Error("Unsupported platform");
+                    }
+                    _a.label = 9;
+                case 9: return [2];
             }
         });
-    });
+    }); });
 }
 exports["default"] = get_version_dirs;
 //# sourceMappingURL=get_version_dirs.js.map
